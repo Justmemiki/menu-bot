@@ -24,3 +24,5 @@ def export_pdf(design_id: str) -> bytes:
             return requests.get(status["download_url"]).content
         time.sleep(0.5)
     raise TimeoutError("Canva export timed out")
+
+
