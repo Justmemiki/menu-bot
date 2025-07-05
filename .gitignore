@@ -1,0 +1,11 @@
+/.env
+# Python venv e artefatti
+/.venv/
+__pycache__/
+
+# Config editor
+.idea/
+
+# File segreti
+.env
+
