@@ -118,7 +118,64 @@ Puoi aggiungere/espandere le variabili nel template e nel prompt di sistema.
 4. Deploy & enjoy!
 
 ---
+## 🌐 Architettura Cloud, Telecomunicazioni e Note Tecniche
 
+### ☁️ **Cloud & Networking Overview**
+
+Questo bot è progettato come microservizio **cloud-native**, con tutti i componenti principali distribuiti su infrastruttura gestita (PaaS) tramite [Render.com](https://render.com/).
+
+#### **Componenti e flusso dati**
+
+- **Render.com**  
+  Ospita l'applicazione Python (Flask) e fornisce:
+    - Endpoint HTTPS pubblico per il webhook Telegram.
+    - Deploy automatico, scaling e gestione risorse.
+    - IP pubblici statici per l'accesso alle API esterne (Canva, OpenRouter).
+
+- **Flask**  
+  Micro web framework Python che gestisce:
+    - Routing delle richieste dal webhook Telegram.
+    - Orchestrazione delle chiamate a OpenRouter (AI) e Canva API.
+
+- **API Integration**
+    - **Telegram Bot API:** ricezione/invio messaggi e documenti.
+    - **OpenRouter/DeepSeek API:** parsing AI e conversione testo → dati strutturati.
+    - **Canva API:** generazione e download PDF dal template.
+
+#### **Topologia rete**
+
+```text
+Telegram User
+    |
+    v
+Telegram Server <----> Render.com (Flask API) <----> OpenRouter API
+                                  |
+                                  +-----> Canva API
+                                  
+```
+
+- Tutto il traffico è cifrato (**HTTPS**).
+- Render gestisce IP pubblici statici per le richieste in uscita:
+    - `52.41.36.82`
+    - `54.191.253.12`
+    - `44.226.122.3`
+  (Visibili anche nella dashboard Render → Outbound IP Addresses)
+
+#### Osservazioni tecniche & sicurezza
+- **Zero server fisici**: l’intera applicazione è *serverless*; tutta la logica, l’hosting e la sicurezza di base sono delegati al cloud.
+- **Gestione segreti**: variabili ambiente (.env) sono salvate nella dashboard Render, *mai* versionate su GitHub.
+- **Monitoring**: puoi controllare i log, il traffico e le metriche in tempo reale direttamente su Render.
+- **Scalabilità**: la piattaforma scala automaticamente (limiti: free tier = qualche secondo di "wake up" se inattivo).
+- **Firewall/Whitelisting**: se necessario, puoi fornire gli IP pubblici Render a servizi esterni (es. Canva API) per configurare whitelist.
+
+---
+
+### 📈 Metriche di Rete e Log
+
+- **Outbound Bandwidth**: monitorata da Render, utile per diagnosticare anomalie di traffico o errori di configurazione API.
+- **HTTP Responses**: puoi controllare graficamente il carico generato dai tuoi utenti.
+
+---
 ## 📖 Licenza
 
 MIT License
